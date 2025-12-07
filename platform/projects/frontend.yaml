@@ -1,6 +1,6 @@
 apiVersion: openchoreo.dev/v1alpha1
 kind: Project
 metadata:
-  name: default-project
+  name: frontend
 spec:
   deploymentPipelineRef: default

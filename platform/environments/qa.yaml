@@ -1,9 +1,0 @@
-apiVersion: core.openchoreo.dev/v1alpha1
-kind: Environment
-metadata:
-  name: qa
-spec:
-  displayName: QA
-  description: Quality Assurance environment
-  dnsPrefix: qa
-  isCritical: false

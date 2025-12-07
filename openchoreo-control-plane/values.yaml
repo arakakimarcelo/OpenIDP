@@ -19,11 +19,6 @@ global:
         description: Development environment for testing
         dnsPrefix: dev
         isCritical: false
-      - name: qa
-        displayName: QA
-        description: Quality Assurance environment
-        dnsPrefix: qa
-        isCritical: false
       - name: preproduction
         displayName: Pre-Production
         description: Pre-production environment
@@ -39,10 +34,6 @@ global:
       description: Standard deployment pipeline
       promotionOrder:
         - sourceEnvironmentRef: development
-          targetEnvironmentRefs:
-            - name: qa
-              requiresApproval: false
-        - sourceEnvironmentRef: qa
           targetEnvironmentRefs:
             - name: preproduction
               requiresApproval: false
