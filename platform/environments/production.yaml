@@ -1,0 +1,9 @@
+apiVersion: core.openchoreo.dev/v1alpha1
+kind: Environment
+metadata:
+  name: production
+spec:
+  displayName: Production
+  description: Production environment
+  dnsPrefix: prod
+  isCritical: true

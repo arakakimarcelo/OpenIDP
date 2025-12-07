@@ -1,0 +1,7 @@
+apiVersion: core.openchoreo.dev/v1alpha1
+kind: Project
+metadata:
+  name: default-project
+spec:
+  displayName: Default Project
+  description: The default project for the organization

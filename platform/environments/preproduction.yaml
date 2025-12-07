@@ -1,0 +1,9 @@
+apiVersion: core.openchoreo.dev/v1alpha1
+kind: Environment
+metadata:
+  name: preproduction
+spec:
+  displayName: Pre-Production
+  description: Pre-production environment
+  dnsPrefix: preprod
+  isCritical: false

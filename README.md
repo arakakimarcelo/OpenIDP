@@ -10,11 +10,22 @@ This project contains the manifests and scripts to deploy OpenChoreo in a more p
 
 ## Directory Structure
 
-- `openchoreo-control-plane/`: Extracted Helm chart for the Control Plane.
-- `openchoreo-data-plane/`: Extracted Helm chart for the Data Plane.
-- `pvc.yaml`: PersistentVolumeClaim for Asgardeo Thunder (required for Control Plane).
-- `catalog-entities/`: Example catalog entities (Teams, APIs, Components, Docs).
+### Platform Configuration
+- `platform/environments/`: Definitions for Development, QA, Pre-Prod, and Production environments.
+- `platform/projects/`: Definitions for Projects (grouping of applications).
+- `openchoreo-control-plane/`: Helm chart for the Control Plane.
+- `openchoreo-data-plane/`: Helm chart for the Data Plane.
+
+### Software Catalog
+- `catalog/teams/`: Definitions for Teams and Users (e.g., Platform Team).
+- `catalog/apis/`: Definitions for APIs (e.g., OpenAPI specs).
+- `catalog/components/`: Definitions for Services, Libraries, and Documentation.
+  - `catalog/components/architecture-docs/`: System architecture documentation (TechDocs).
+
+### Templates
 - `templates/`: Custom software templates (e.g., Java 21 Spring Boot 3).
+
+### Scripts
 - `dev-connect.sh`: Script to automatically handle port-forwarding.
 
 ## Deployment Steps
@@ -63,9 +74,10 @@ To easily access the UI and handle the necessary port-forwards, run the helper s
 ./dev-connect.sh
 ```
 
-This will start port-forwarding for both the UI (Port 7007) and the Identity Provider (Port 8090). Keep this script running in your terminal.
-
-Then access [http://localhost:7007](http://localhost:7007) in your browser.
+This will start port-forwarding for:
+- **UI**: [http://localhost:7007](http://localhost:7007)
+- **Identity Provider**: [http://localhost:8090](http://localhost:8090)
+- **Gateway**: [http://localhost:9080](http://localhost:9080)
 
 **Credentials:**
 - Username: `admin@openchoreo.dev`
@@ -75,9 +87,9 @@ Then access [http://localhost:7007](http://localhost:7007) in your browser.
 
 ### Adding Catalog Entities (Teams, APIs, Docs)
 
-1.  Push the `catalog-entities/` folder to a Git repository (e.g., GitHub).
+1.  Push the `catalog/` folder to a Git repository (e.g., GitHub).
 2.  In OpenChoreo UI, go to **Create** -> **Register Existing Component**.
-3.  Enter the URL to the raw YAML file (e.g., `https://github.com/your-user/your-repo/blob/main/catalog-entities/team-platform.yaml`).
+3.  Enter the URL to the raw YAML file (e.g., `https://github.com/your-user/your-repo/blob/main/catalog/teams/platform-team.yaml`).
 4.  Click **Analyze** and then **Import**.
 
 ### Adding Software Templates (Scaffolding)
@@ -86,12 +98,11 @@ Then access [http://localhost:7007](http://localhost:7007) in your browser.
 2.  In OpenChoreo UI, go to **Create** -> **Register Existing Component**.
 3.  Enter the URL to the `template.yaml` file (e.g., `https://github.com/your-user/your-repo/blob/main/templates/spring-boot-3/template.yaml`).
 4.  Click **Analyze** and then **Import**.
-5.  You will now see "Spring Boot 3 Service (Java 21)" as an option when you click **Create**.
 
 ### TechDocs (Documentation)
 
 TechDocs is enabled in "local" mode. To view documentation:
-1.  Register the `catalog-entities/component-docs.yaml` component.
+1.  Register the `catalog/components/architecture-docs/catalog-info.yaml` component.
 2.  Go to the **Docs** tab in the UI.
 3.  Select "System Architecture Documentation" to view the rendered site.
 
@@ -105,4 +116,3 @@ TechDocs is enabled in "local" mode. To view documentation:
 6.  kubectl get pods -A | grep greeter
 7.  kubectl get httproute -A -o wide
 8.  curl http://development.openchoreoapis.localhost:9080/greeter-service/greeter/greet
-
