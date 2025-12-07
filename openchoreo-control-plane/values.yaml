@@ -19,10 +19,15 @@ global:
         description: Development environment for testing
         dnsPrefix: dev
         isCritical: false
-      - name: staging
-        displayName: Staging
-        description: Staging environment for pre-production testing
-        dnsPrefix: staging
+      - name: qa
+        displayName: QA
+        description: Quality Assurance environment
+        dnsPrefix: qa
+        isCritical: false
+      - name: preproduction
+        displayName: Pre-Production
+        description: Pre-production environment
+        dnsPrefix: preprod
         isCritical: false
       - name: production
         displayName: Production
@@ -31,16 +36,20 @@ global:
         isCritical: true
     deploymentPipeline:
       displayName: Default Pipeline
-      description: Standard deployment pipeline with dev, staging, and prod environments
+      description: Standard deployment pipeline
       promotionOrder:
         - sourceEnvironmentRef: development
           targetEnvironmentRefs:
-            - name: staging
+            - name: qa
               requiresApproval: false
-        - sourceEnvironmentRef: staging
+        - sourceEnvironmentRef: qa
+          targetEnvironmentRefs:
+            - name: preproduction
+              requiresApproval: false
+        - sourceEnvironmentRef: preproduction
           targetEnvironmentRefs:
             - name: production
-              requiresApproval: false
+              requiresApproval: true
 # Override the full name of the chart release
 fullnameOverride: openchoreo
 controllerManager:

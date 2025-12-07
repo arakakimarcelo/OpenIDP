@@ -94,3 +94,15 @@ TechDocs is enabled in "local" mode. To view documentation:
 1.  Register the `catalog-entities/component-docs.yaml` component.
 2.  Go to the **Docs** tab in the UI.
 3.  Select "System Architecture Documentation" to view the rendered site.
+
+### Testing an API
+
+1.  kubectl apply -f https://raw.githubusercontent.com/openchoreo/openchoreo/release-v0.6/samples/from-image/go-greeter-service/greeter-service.yaml
+2.  kubectl get component,workload,releasebinding -A
+3.  kubectl get component greeter-service
+4.  kubectl get releasebinding greeter-service-development
+5.  kubectl get deployment -A | grep greeter
+6.  kubectl get pods -A | grep greeter
+7.  kubectl get httproute -A -o wide
+8.  curl http://development.openchoreoapis.localhost:9080/greeter-service/greeter/greet
+
