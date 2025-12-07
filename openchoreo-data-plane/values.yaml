@@ -1,0 +1,345 @@
+# Global values shared across all components
+global:
+  # Common labels to add to all resources
+  commonLabels: {}
+
+kubernetesClusterDomain: cluster.local
+
+# Wait job configuration for post-install hooks
+waitJob:
+  image: bitnamilegacy/kubectl:1.32.4
+
+# customizing the registry configurations
+# NOTE: Registry has been moved to Build Plane. This registry is deprecated.
+registry:
+  enabled: false
+  # -- Resource limits and requests for the registry
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 100m
+    requests:
+      memory: 128Mi
+      cpu: 50m
+  service:
+    # -- NodePort for the registry service
+    nodePort: 30003
+  # -- Persistent volume storage for the registry
+  storage:
+    size: 2Gi
+
+# customizing the gateway configurations
+# This follows the structure from https://github.com/kgateway-dev/kgateway/blob/main/install/helm/kgateway/values.yaml
+# with additional OpenChoreo-specific gateway configuration
+gateway:
+  # Enable KGateway (controls both kgateway and kgateway-crds installation)
+  enabled: true
+
+  # OpenChoreo gateway configuration
+  httpPort: 80
+  httpsPort: 443
+
+  # TLS configuration for HTTPS listeners
+  tls:
+    # -- Cert-manager ClusterIssuer to use for certificate generation
+    # Defaults to openchoreo-selfsigned-issuer if not specified
+    clusterIssuer: ""
+    # -- Hostname for the HTTPS listener
+    # Defaults to *.openchoreoapis.localhost if not specified
+    hostname: ""
+
+  # KGateway controller configuration
+  controller:
+    replicaCount: 1
+    logLevel: info
+    image:
+      registry: ""
+      repository: kgateway
+      pullPolicy: IfNotPresent
+      tag: ""
+    service:
+      type: ClusterIP
+      ports:
+        grpc: 9977
+        agwGrpc: 9978
+        health: 9093
+        metrics: 9092
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  # Agent Gateway - disabled by default for MCP server and REST API connectivity
+  agentgateway:
+    enabled: false
+
+  # Envoy - enabled by default for traffic routing
+  envoy:
+    enabled: true
+    # Mount /tmp as emptyDir volume to fix Envoy temporary file creation issues
+    # Enable this if gateway pods crash with "Failed to create temporary file" errors
+    # Common on: macOS with Docker Desktop/Colima with Rosetta enabled.
+    mountTmpVolume: false
+
+  # Image configuration
+  image:
+    registry: cr.kgateway.dev/kgateway-dev
+    tag: ""
+    pullPolicy: IfNotPresent
+
+# customizing the cert-manager configurations
+cert-manager:
+  enabled: true
+  fullnameOverride: cert-manager
+  nameOverride: cert-manager
+  crds:
+    enabled: true
+  # -- Enable Gateway API support in cert-manager
+  config:
+    enableGatewayAPI: true
+  # -- Resource limits and requests for the cert-manager controller
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+  cainjector:
+    # -- Resource limits and requests for the cert-manager cainjector
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 50m
+        memory: 64Mi
+  webhook:
+    # -- Resource limits and requests for the cert-manager webhook
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 50m
+        memory: 64Mi
+
+# customizing the external-secrets configurations
+external-secrets:
+  enabled: true
+  fullnameOverride: external-secrets
+  nameOverride: external-secrets
+
+# Fake Secret Store configuration for development
+# Users should override this with their own ClusterSecretStore
+fakeSecretStore:
+  enabled: true
+  name: default
+  secrets:
+    - key: github-pat
+      value: "fake-github-token-for-development"
+    - key: username
+      value: "dev-user"
+    - key: password
+      value: "dev-password"
+    - key: RCA_LLM_API_KEY
+      value: "fake-llm-api-key-for-development"
+
+# Customizing networking configurations
+networking:
+  enabled: true
+
+# Customizing security configurations  
+security:
+  enabled: true
+
+# Customizing overall observability configurations
+observability:
+  enabled: true
+  observabilityPlaneUrl: ""
+  # Master switch for all metrics collection (L7 visibility + ServiceMonitors)
+  metrics:
+    enabled: false  # Enable after observability-plane is installed
+  logging:
+    enabled: false  # Enable after observability-plane is installed
+    publishers:
+      fluentbit:
+        enabled: true
+
+# Customizing Fluent Bit configurations
+fluentBit:
+  enabled: true
+  image:
+    repository: fluent/fluent-bit
+    tag: "2.1.10"
+    pullPolicy: IfNotPresent
+  
+  config:
+    service:
+      flush: 1
+      logLevel: info
+      daemon: off
+    
+    input:
+      name: tail
+      tag: "kube.*"
+      # TODO: The openchoreo-ci namespace should not be included in the Data Plane by default;
+      # it should be overridden in the single-cluster setup.
+      path: "/var/log/containers/*_openchoreo-*_*.log,/var/log/containers/*_dp-*_*.log,/var/log/containers/*_openchoreo-ci-*_*.log"
+      excludePath: "/var/log/containers/*opensearch*_openchoreo-observability-plane_*.log,/var/log/containers/*fluent-bit*_openchoreo-data-plane_*.log"
+      parser: docker
+      inotifyWatcher: false
+      db: "/var/log/flb_kube.db"
+      memBufLimit: "256MB"
+      skipLongLines: true
+      refreshInterval: 10
+    
+    filter:
+      name: kubernetes
+      match: "kube.*"
+      kubeURL: "https://kubernetes.default.svc:443"
+      kubeCAFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+      kubeTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+      kubeTagPrefix: "kube.var.log.containers."
+      mergeLog: true
+      mergeLogKey: "log_processed"
+      k8sLoggingParser: true
+      k8sLoggingExclude: false
+    
+    output:
+      name: opensearch
+      match: "kube.*"
+      index: kubernetes_cluster
+      type: flb_type
+      logstashFormat: true
+      logstashPrefix: kubernetes
+      timeKey: "@timestamp"
+      traceError: true
+      suppressTypeName: true
+    
+    # OpenSearch connection configuration
+    opensearch:
+      host: "opensearch.openchoreo-observability-plane.svc.cluster.local"
+      port: "9200"
+      authentication:
+        basicauth:
+          username: "admin"
+          password: "ThisIsTheOpenSearchPassword1"
+      tls: true
+      tlsVerify: false
+    
+    parser:
+      name: docker
+      format: json
+      timeKey: time
+      timeFormat: "%Y-%m-%dT%H:%M:%S.%L"
+      timeKeep: true
+  
+  rbac:
+    create: true
+    serviceAccountName: fluent-bit
+  
+  hostPaths:
+    varLog: /var/log
+    dockerContainers: /var/lib/docker/containers
+
+opentelemetry-collector:
+  enabled: false
+  clusterRole:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["list", "watch"]
+      - apiGroups: ["apps"]
+        resources: ["replicasets"]
+        verbs: ["list","watch"]
+
+  configMap:
+    create: false
+    existingName: "opentelemetry-collector-config"
+
+  fullnameOverride: "opentelemetry-collector"
+
+  image:
+    repository: otel/opentelemetry-collector-contrib
+
+  mode: deployment
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 200Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
+
+
+# Cluster Agent configuration
+# The agent connects to the control plane cluster gateway via WebSocket
+clusterAgent:
+  enabled: false  # Set to true to enable cluster agent
+  name: cluster-agent
+  replicas: 1
+  image:
+    repository: ghcr.io/openchoreo/cluster-agent
+    tag: "" # If no value is set, use Chart.AppVersion
+    pullPolicy: IfNotPresent
+  # Server URL of the cluster gateway in control plane
+  serverUrl: wss://cluster-gateway.openchoreo-control-plane.svc.cluster.local:8443/ws
+  # Name of this data plane
+  planeName: default
+  # Type of plane (dataplane or buildplane)
+  planeType: dataplane
+  heartbeatInterval: 30s
+  reconnectDelay: 5s
+  logLevel: info
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "1000m"
+      memory: "512Mi"
+  serviceAccount:
+    create: true
+    name: cluster-agent
+    annotations: {}
+  rbac:
+    create: true
+  priorityClass:
+    create: false
+    name: cluster-agent
+    value: 900000
+  tls:
+    enabled: true
+    # Secret containing client certificate and key
+    secretName: cluster-agent-tls
+    clientSecretName: cluster-agent-tls
+    # ConfigMap containing server CA certificate
+    serverCAConfigMap: cluster-gateway-ca
+    # Certificate duration and renewal
+    duration: 2160h # 90 days
+    renewBefore: 360h # 15 days
+  # Namespace where cluster-gateway CA exists (control plane namespace)
+  serverCANamespace: openchoreo-control-plane
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+
+

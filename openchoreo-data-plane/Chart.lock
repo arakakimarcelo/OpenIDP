@@ -1,0 +1,18 @@
+dependencies:
+- name: external-secrets
+  repository: https://charts.external-secrets.io
+  version: 0.19.2
+- name: kgateway-crds
+  repository: oci://cr.kgateway.dev/kgateway-dev/charts
+  version: v2.1.1
+- name: kgateway
+  repository: oci://cr.kgateway.dev/kgateway-dev/charts
+  version: v2.1.1
+- name: opentelemetry-collector
+  repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+  version: 0.140.0
+- name: cert-manager
+  repository: oci://quay.io/jetstack/charts
+  version: v1.16.2
+digest: sha256:b75b536439a1198835509b326939a35395a72db8c20fab3873a7539621367184
+generated: "2025-11-28T16:14:26.444233+05:30"

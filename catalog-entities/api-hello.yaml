@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: hello-world-api
+  description: A simple Hello World API
+  tags: [java, spring-boot]
+  links:
+    - url: https://github.com/openchoreo/openchoreo
+      title: Source Code
+      icon: github
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Hello World API
+      version: 1.0.0
+    paths:
+      /hello:
+        get:
+          summary: Say Hello
+          responses:
+            '200':
+              description: OK
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                    example: "Hello, World!"

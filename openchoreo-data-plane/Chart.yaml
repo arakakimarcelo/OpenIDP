@@ -1,0 +1,46 @@
+apiVersion: v2
+appVersion: v0.6.0
+dependencies:
+- condition: external-secrets.enabled
+  name: external-secrets
+  repository: https://charts.external-secrets.io
+  version: 0.19.2
+- condition: gateway.enabled
+  name: kgateway-crds
+  repository: oci://cr.kgateway.dev/kgateway-dev/charts
+  version: v2.1.1
+- alias: gateway
+  condition: gateway.enabled
+  name: kgateway
+  repository: oci://cr.kgateway.dev/kgateway-dev/charts
+  version: v2.1.1
+- condition: opentelemetry-collector.enabled
+  name: opentelemetry-collector
+  repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+  version: 0.140.0
+- condition: cert-manager.enabled
+  name: cert-manager
+  repository: oci://quay.io/jetstack/charts
+  version: v1.16.2
+description: A Helm chart for OpenChoreo Data Plane
+home: https://github.com/openchoreo/openchoreo
+icon: https://openchoreo.dev/img/openchoreo-logo.svg
+keywords:
+- openchoreo
+- internal-developer-platform
+- idp
+- kubernetes
+- developer-experience
+- devops
+- platform-engineering
+- data-plane
+- gateway
+- observability
+maintainers:
+- name: OpenChoreo Team
+  url: https://github.com/openchoreo/openchoreo
+name: openchoreo-data-plane
+sources:
+- https://github.com/openchoreo/openchoreo
+type: application
+version: 0.6.0
