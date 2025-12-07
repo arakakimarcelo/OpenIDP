@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-extra-config
+  namespace: openchoreo-system
+data:
+  app-config.extra.yaml: |
+    integrations:
+      github:
+        - host: github.com
+          token: ${GITHUB_TOKEN}
+    catalog:
+      locations:
+        - type: url
+          target: https://github.com/arakakimarcelo/OpenIDP/blob/main/templates/spring-boot-3/template.yaml
+          rules:
+            - allow: [Template]

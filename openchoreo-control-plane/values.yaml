@@ -389,13 +389,10 @@ backstage:
       value: "local"
     - name: APP_CONFIG_catalog_rules
       value: '[{"allow": ["User", "Group", "Component", "API", "Resource", "System", "Domain", "Location", "Template"]}]'
-    - name: APP_CONFIG_integrations_github_0_host
-      value: "github.com"
-    - name: APP_CONFIG_integrations_github_0_token
-      valueFrom:
-        secretKeyRef:
-          name: backstage-secrets
-          key: GITHUB_TOKEN
+    - name: APP_CONFIG_integrations
+      value: '{"github": [{"host": "github.com", "token": "${GITHUB_TOKEN}"}]}'
+    - name: APP_CONFIG_catalog_locations
+      value: '[{"type": "url", "target": "https://github.com/arakakimarcelo/OpenIDP/blob/main/templates/spring-boot-3/template.yaml", "rules": [{"allow": ["Template"]}]}]'
   baseUrl: ""
   thunder:
     baseUrl: "http://localhost:8090"
