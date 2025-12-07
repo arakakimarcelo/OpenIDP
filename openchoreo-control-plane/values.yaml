@@ -382,6 +382,24 @@ backstage:
       value: "local"
     - name: APP_CONFIG_techdocs_publisher_type
       value: "local"
+    - name: APP_CONFIG_catalog_rules_0_allow_0
+      value: "User"
+    - name: APP_CONFIG_catalog_rules_0_allow_1
+      value: "Group"
+    - name: APP_CONFIG_catalog_rules_0_allow_2
+      value: "Component"
+    - name: APP_CONFIG_catalog_rules_0_allow_3
+      value: "API"
+    - name: APP_CONFIG_catalog_rules_0_allow_4
+      value: "Resource"
+    - name: APP_CONFIG_catalog_rules_0_allow_5
+      value: "System"
+    - name: APP_CONFIG_catalog_rules_0_allow_6
+      value: "Domain"
+    - name: APP_CONFIG_catalog_rules_0_allow_7
+      value: "Location"
+    - name: APP_CONFIG_catalog_rules_0_allow_8
+      value: "Template"
   baseUrl: ""
   thunder:
     baseUrl: "http://localhost:8090"
