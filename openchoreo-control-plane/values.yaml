@@ -360,6 +360,11 @@ backstage:
       value: info
     - name: PORT
       value: "7007"
+    - name: GITHUB_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: backstage-secrets
+          key: GITHUB_TOKEN
     - name: APP_CONFIG_app_title
       value: "Open IDP"
     - name: APP_CONFIG_app_branding_theme_dark_primaryColor
@@ -382,24 +387,15 @@ backstage:
       value: "local"
     - name: APP_CONFIG_techdocs_publisher_type
       value: "local"
-    - name: APP_CONFIG_catalog_rules_0_allow_0
-      value: "User"
-    - name: APP_CONFIG_catalog_rules_0_allow_1
-      value: "Group"
-    - name: APP_CONFIG_catalog_rules_0_allow_2
-      value: "Component"
-    - name: APP_CONFIG_catalog_rules_0_allow_3
-      value: "API"
-    - name: APP_CONFIG_catalog_rules_0_allow_4
-      value: "Resource"
-    - name: APP_CONFIG_catalog_rules_0_allow_5
-      value: "System"
-    - name: APP_CONFIG_catalog_rules_0_allow_6
-      value: "Domain"
-    - name: APP_CONFIG_catalog_rules_0_allow_7
-      value: "Location"
-    - name: APP_CONFIG_catalog_rules_0_allow_8
-      value: "Template"
+    - name: APP_CONFIG_catalog_rules
+      value: '[{"allow": ["User", "Group", "Component", "API", "Resource", "System", "Domain", "Location", "Template"]}]'
+    - name: APP_CONFIG_integrations_github_0_host
+      value: "github.com"
+    - name: APP_CONFIG_integrations_github_0_token
+      valueFrom:
+        secretKeyRef:
+          name: backstage-secrets
+          key: GITHUB_TOKEN
   baseUrl: ""
   thunder:
     baseUrl: "http://localhost:8090"
