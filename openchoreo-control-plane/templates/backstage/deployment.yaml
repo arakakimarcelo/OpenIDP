@@ -103,4 +103,12 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        volumeMounts:
+        {{- if .Values.backstage.extraVolumeMounts }}
+          {{- toYaml .Values.backstage.extraVolumeMounts | nindent 10 }}
+        {{- end }}
+      volumes:
+      {{- if .Values.backstage.extraVolumes }}
+        {{- toYaml .Values.backstage.extraVolumes | nindent 8 }}
+      {{- end }}
 {{- end }}

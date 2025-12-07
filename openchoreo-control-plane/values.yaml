@@ -353,6 +353,17 @@ backstage:
   backendSecret: ""
   openchoreoApi:
     url: ""
+  extraVolumes:
+    - name: backstage-config
+      configMap:
+        name: backstage-config
+  extraVolumeMounts:
+    - name: backstage-config
+      mountPath: /app/spring-boot-template.yaml
+      subPath: spring-boot-template.yaml
+    - name: backstage-config
+      mountPath: /app/app-config.local.yaml
+      subPath: app-config.local.yaml
   env:
     - name: NODE_ENV
       value: production
@@ -389,10 +400,8 @@ backstage:
       value: "local"
     - name: APP_CONFIG_catalog_rules
       value: '[{"allow": ["User", "Group", "Component", "API", "Resource", "System", "Domain", "Location", "Template"]}]'
-    - name: APP_CONFIG_integrations
-      value: '{"github": [{"host": "github.com", "token": "${GITHUB_TOKEN}"}]}'
     - name: APP_CONFIG_catalog_locations
-      value: '[{"type": "url", "target": "https://github.com/arakakimarcelo/OpenIDP/blob/main/templates/spring-boot-3/template.yaml", "rules": [{"allow": ["Template"]}]}]'
+      value: '[{"type": "file", "target": "/app/spring-boot-template.yaml", "rules": [{"allow": ["Template"]}]}]'
   baseUrl: ""
   thunder:
     baseUrl: "http://localhost:8090"

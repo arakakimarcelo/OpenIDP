@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-boot-template
+  namespace: openchoreo-system
+data:
+  template.yaml: |
+    apiVersion: scaffolder.backstage.io/v1beta3
+    kind: Template
+    metadata:
+      name: spring-boot-3-java-21-template
+      title: Spring Boot 3 Service (Java 21)
+      description: Create a new Spring Boot 3 application using Java 21.
+      tags:
+        - java
+        - spring-boot
+        - microservice
+    spec:
+      owner: platform-team
+      type: service
+    
+      parameters:
+        - title: Provide some simple information
+          required:
+            - component_id
+            - java_package
+            - description
+          properties:
+            component_id:
+              title: Name
+              type: string
+              description: Unique name of the component
+              ui:field: EntityNamePicker
+            description:
+              title: Description
+              type: string
+              description: Help others understand what this website is for.
+            java_package:
+              title: Java Package
+              type: string
+              description: The Java package name (e.g. com.example.service)
+              default: com.example.service
+            owner:
+              title: Owner
+              type: string
+              description: Owner of the component
+              ui:field: OwnerPicker
+              ui:options:
+                allowedKinds:
+                  - Group
+        - title: Choose a location
+          required:
+            - repoUrl
+          properties:
+            repoUrl:
+              title: Repository Location
+              type: string
+              ui:field: RepoUrlPicker
+              ui:options:
+                allowedHosts:
+                  - github.com
+    
+      steps:
+        - id: template
+          name: Fetch Skeleton + Template
+          action: fetch:template
+          input:
+            url: https://github.com/arakakimarcelo/OpenIDP/tree/main/templates/spring-boot-3/skeleton
+            values:
+              component_id: ${{ parameters.component_id }}
+              description: ${{ parameters.description }}
+              java_package: ${{ parameters.java_package }}
+              owner: ${{ parameters.owner }}
+    
+        - id: publish
+          name: Publish
+          action: publish:github
+          input:
+            description: This is ${{ parameters.component_id }}
+            repoUrl: ${{ parameters.repoUrl }}
+    
+        - id: register
+          name: Register
+          action: catalog:register
+          input:
+            repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+            catalogInfoPath: '/catalog-info.yaml'
+    
+      output:
+        links:
+          - title: Repository
+            url: ${{ steps.publish.output.remoteUrl }}
+          - title: Open in catalog
+            icon: catalog
+            entityRef: ${{ steps.register.output.entityRef }}
