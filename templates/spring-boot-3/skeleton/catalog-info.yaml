@@ -9,6 +9,7 @@ metadata:
     - microservice
   annotations:
     backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: ${{ values.repoUrl | projectSlug }}
 spec:
   type: service
   lifecycle: experimental
