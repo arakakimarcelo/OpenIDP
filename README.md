@@ -13,8 +13,9 @@ This project contains the manifests and scripts to deploy OpenChoreo in a more p
 - `openchoreo-control-plane/`: Extracted Helm chart for the Control Plane.
 - `openchoreo-data-plane/`: Extracted Helm chart for the Data Plane.
 - `pvc.yaml`: PersistentVolumeClaim for Asgardeo Thunder (required for Control Plane).
-- `catalog-entities/`: Example catalog entities (Teams, APIs, Components).
+- `catalog-entities/`: Example catalog entities (Teams, APIs, Components, Docs).
 - `templates/`: Custom software templates (e.g., Java 21 Spring Boot 3).
+- `dev-connect.sh`: Script to automatically handle port-forwarding.
 
 ## Deployment Steps
 
@@ -37,14 +38,7 @@ Then install the chart. **Note:** We override several URLs to `localhost` to all
 
 ```bash
 helm install openchoreo-control-plane ./openchoreo-control-plane \
-  --namespace openchoreo-system \
-  --set backstage.thunder.baseUrl=http://localhost:8090 \
-  --set backstage.auth.authorizationUrl=http://localhost:8090/oauth2/authorize \
-  --set backstage.auth.tokenUrl=http://openchoreo-asgardeo-thunder.openchoreo-system.svc.cluster.local:8090/oauth2/token \
-  --set asgardeoThunder.config.gateClient.hostname=localhost \
-  --set asgardeoThunder.config.gateClient.port=8090 \
-  --set asgardeoThunder.runtimeConfig.server.hostname=localhost \
-  --set asgardeoThunder.runtimeConfig.server.port=8090
+  --namespace openchoreo-system
 ```
 
 ### 2. Install Data Plane
@@ -63,17 +57,13 @@ helm install openchoreo-data-plane ./openchoreo-data-plane \
 
 ### 3. Access the UI (Local Development)
 
-To log in locally, you need **two** separate terminal windows running port-forwards:
+To easily access the UI and handle the necessary port-forwards, run the helper script:
 
-**Terminal 1 (Backstage UI):**
 ```bash
-kubectl port-forward svc/openchoreo-ui -n openchoreo-system 7007:7007
+./dev-connect.sh
 ```
 
-**Terminal 2 (Identity Provider):**
-```bash
-kubectl port-forward svc/openchoreo-asgardeo-thunder -n openchoreo-system 8090:8090
-```
+This will start port-forwarding for both the UI (Port 7007) and the Identity Provider (Port 8090). Keep this script running in your terminal.
 
 Then access [http://localhost:7007](http://localhost:7007) in your browser.
 
@@ -97,3 +87,10 @@ Then access [http://localhost:7007](http://localhost:7007) in your browser.
 3.  Enter the URL to the `template.yaml` file (e.g., `https://github.com/your-user/your-repo/blob/main/templates/spring-boot-3/template.yaml`).
 4.  Click **Analyze** and then **Import**.
 5.  You will now see "Spring Boot 3 Service (Java 21)" as an option when you click **Create**.
+
+### TechDocs (Documentation)
+
+TechDocs is enabled in "local" mode. To view documentation:
+1.  Register the `catalog-entities/component-docs.yaml` component.
+2.  Go to the **Docs** tab in the UI.
+3.  Select "System Architecture Documentation" to view the rendered site.

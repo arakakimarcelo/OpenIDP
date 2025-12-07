@@ -1,0 +1,5 @@
+site_name: Architecture Docs
+
+nav:
+  - Home: index.md
+  - Design: design.md

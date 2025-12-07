@@ -378,6 +378,10 @@ backstage:
       value: "#000000"
     - name: APP_CONFIG_app_branding_theme_light_navigationIndicatorColor
       value: "#FFB433"
+    - name: APP_CONFIG_techdocs_builder
+      value: "local"
+    - name: APP_CONFIG_techdocs_publisher_type
+      value: "local"
   baseUrl: ""
   thunder:
     baseUrl: "http://localhost:8090"

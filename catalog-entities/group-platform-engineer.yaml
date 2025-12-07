@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platformEngineer
+  description: The Platform Engineering Team (Synced from Identity Provider)
+  title: Platform Engineers
+spec:
+  type: team
+  profile:
+    displayName: Platform Engineers
+    email: platform-engineers@openchoreo.dev
+    picture: https://avatars.dicebear.com/api/identicon/platformEngineer.svg
+  children: []
