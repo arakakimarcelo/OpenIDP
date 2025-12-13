@@ -9,6 +9,25 @@ data:
       github:
         - host: github.com
           token: ${GITHUB_TOKEN}
+    
+    proxy:
+      endpoints:
+        '/github/api':
+          target: 'https://api.github.com'
+
+          headers:
+            Authorization: 'token ${GITHUB_TOKEN}'
+            User-Agent: 'Backstage-OpenChoreo'
+        '/github-actions':
+          target: 'https://api.github.com'
+          headers:
+            Authorization: 'token ${GITHUB_TOKEN}'
+            User-Agent: 'Backstage-OpenChoreo'
+    auth:
+      environment: development
+      providers:
+        guest:
+          dangerouslyAllowOutsideDevelopment: true
   
   spring-boot-template.yaml: |
     apiVersion: scaffolder.backstage.io/v1beta3

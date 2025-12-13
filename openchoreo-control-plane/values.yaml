@@ -329,9 +329,9 @@ backstage:
   enabled: true
   replicas: 1
   image:
-    repository: ghcr.io/openchoreo/openchoreo-ui
-    tag: "" # If no value is set, use Chart.AppVersion
-    pullPolicy: IfNotPresent
+    repository: openchoreo-custom
+    tag: v4 # If no value is set, use Chart.AppVersion
+    pullPolicy: Never
   service:
     type: ClusterIP
     port: 7007
@@ -401,7 +401,7 @@ backstage:
     - name: APP_CONFIG_catalog_rules
       value: '[{"allow": ["User", "Group", "Component", "API", "Resource", "System", "Domain", "Location", "Template"]}]'
     - name: APP_CONFIG_catalog_locations
-      value: '[{"type": "file", "target": "/app/spring-boot-template.yaml", "rules": [{"allow": ["Template"]}]}]'
+      value: '[{"type": "file", "target": "/app/spring-boot-template.yaml", "rules": [{"allow": ["Template"]}]}, {"type": "url", "target": "https://github.com/arakakimarcelo/open-idp-example-service/blob/main/catalog-info.yaml"}]'
   baseUrl: ""
   thunder:
     baseUrl: "http://localhost:8090"
